@@ -39,41 +39,95 @@ psql -d tu_db -f pg_logify.sql
 
 ## 📖 Guía de Uso
 
-### 1. Formato de Color y Estilo
-
-Perfecto para resaltar alertas o estados en scripts de mantenimiento.
-
+ 
 ```sql
-SELECT pg_logify('PROCESO FINALIZADO', 'green', 'bold');
 
-```
+---------------------------------------------------------
+-- 1) RETORNO DE TEXTO (Para asignar a variables)
+---------------------------------------------------------
+-- Nota: p_is_return = FALSE devuelve el valor TEXT sin imprimir NOTICE
+SELECT 'Resultado capturado: ' || systools.pg_logify('Texto para variable', 'cyan', 'bold', FALSE) AS test_variable;
 
-### 2. Transformación de Tipografía
+---------------------------------------------------------
+-- 2) PRUEBA DE COLORES ANSI (Solo visibles en psql)
+---------------------------------------------------------
+SELECT systools.pg_logify('Color: BLACK',   'black',   'bold');
+SELECT systools.pg_logify('Color: RED',     'red',     'bold');
+SELECT systools.pg_logify('Color: GREEN',   'green',   'bold');
+SELECT systools.pg_logify('Color: YELLOW',  'yellow',  'bold');
+SELECT systools.pg_logify('Color: BLUE',    'blue',    'bold');
+SELECT systools.pg_logify('Color: MAGENTA', 'magenta', 'bold');
+SELECT systools.pg_logify('Color: CYAN',    'cyan',    'bold');
+SELECT systools.pg_logify('Color: WHITE',   'white',   'bold');
 
-Haz que tus mensajes destaquen con estilos únicos:
+---------------------------------------------------------
+-- 3) PRUEBA DE ESTILOS ANSI
+---------------------------------------------------------
+SELECT systools.pg_logify('Estilo: NEGRITA ',    '', 'bold');
+SELECT systools.pg_logify('Estilo: ITALIC',     '', 'italic');
+SELECT systools.pg_logify('Estilo: SUBRAYADO',  '', 'underline');
+SELECT systools.pg_logify('Estilo: PARPADEANTE','', 'blink');
 
-```sql
--- Texto en burbujas
-SELECT pg_logify('Hola Mundo', typography => 'bubble'); 
--- Resultado: ⓗⓞⓛⓐ ⓜⓤⓝⓓⓞ
+---------------------------------------------------------
+-- 4) TRANSFORMACIONES UNICODE (Tipografía)
+---------------------------------------------------------
 
--- Texto invertido
-SELECT pg_logify('Alerta de Seguridad', typography => 'inverted'); 
--- Resultado: ɐןǝɹʇɐ pǝ sǝƃnuᴉpɐp
+SELECT systools.pg_logify('Tipografia: BOLD',          '', '', TRUE, NULL, FALSE, NULL, 'bold');
+SELECT systools.pg_logify('Tipografia: ITALIC',        '', '', TRUE, NULL, FALSE, NULL, 'italic');
+SELECT systools.pg_logify('Tipografia: BUBBLE',        '', '', TRUE, NULL, FALSE, NULL, 'bubble');
+SELECT systools.pg_logify('Tipografia: INVERTED',      '', '', TRUE, NULL, FALSE, NULL, 'inverted');
+SELECT systools.pg_logify('Tipografia: bold_italic',   '', '', TRUE, NULL, FALSE, NULL, 'bold_italic');
+SELECT systools.pg_logify('Tipografia: underlined',    '', '', TRUE, NULL, FALSE, NULL, 'underlined');
+SELECT systools.pg_logify('Tipografia: strikethrough', '', '', TRUE, NULL, FALSE, NULL, 'strikethrough');
+SELECT systools.pg_logify('Tipografia: superscript',   '', '', TRUE, NULL, FALSE, NULL, 'superscript');
+SELECT systools.pg_logify('Tipografia: subscript',     '', '', TRUE, NULL, FALSE, NULL, 'subscript');
 
-```
 
-### 3. Registro en Archivo (Logging)
 
-Registra eventos directamente en un archivo del servidor:
 
-```sql
-SELECT pg_logify(
-    'Error en ETL', 
-    'red', 
-    log_to_file => '/var/log/postgres/etl_errors.log',
-    include_timestamp => true
+---------------------------------------------------------
+-- 5) COMBINACIONES (Color + Estilo + Tipografía + Timestamp)
+---------------------------------------------------------
+-- Texto en cian, negrita, con timestamp y tipografía bubble
+SELECT systools.pg_logify('Log de Sistema OK', 'cyan', 'bold', TRUE, NULL, TRUE, NULL, 'bold');
+
+-- Texto en rojo, con timestamp y transformación a mayúsculas (UPPER)
+SELECT systools.pg_logify('Error critico detectado', 'red', 'bold', TRUE, NULL, TRUE, 'upper');
+
+
+
+---------------------------------------------------------
+-- 6) Guardar en un archivo y tabla
+---------------------------------------------------------
+-- Después de ejecutar los ejemplos anteriores, verifica que se registraron correctamente
+
+SELECT systools.pg_logify(
+    p_text      := 'ERROR: Fallo de conexión con API externa',
+    p_color     := 'red',
+    p_style     := 'bold',
+    p_log_path  := '/tmp/msg_pg_logify.log',
+    p_add_timestamp := false,
+    p_case      := 'upper'
 );
+
+ 
+---------------------------------------------------------
+-- 7) VALIDACIÓN DE LOGS (Auditoría Corporativa)
+---------------------------------------------------------
+-- Después de ejecutar los ejemplos anteriores, verifica que se registraron correctamente
+SELECT 
+    log_id, 
+    status, 
+    fun_name, 
+    user_name, 
+    msg, 
+    date_insert 
+FROM logs.functions 
+WHERE fun_name = 'systools.pg_logify'
+ORDER BY date_insert DESC 
+LIMIT 10;
+
+
 
 ```
 
