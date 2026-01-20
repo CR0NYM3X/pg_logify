@@ -63,10 +63,13 @@ SELECT systools.pg_logify('Color: WHITE',   'white',   'bold');
 ---------------------------------------------------------
 -- 3) PRUEBA DE ESTILOS ANSI
 ---------------------------------------------------------
-SELECT systools.pg_logify('Estilo: NEGRITA ',    '', 'bold');
+SELECT systools.pg_logify('Estilo: NEGRITA ',   '', 'bold');
 SELECT systools.pg_logify('Estilo: ITALIC',     '', 'italic');
 SELECT systools.pg_logify('Estilo: SUBRAYADO',  '', 'underline');
 SELECT systools.pg_logify('Estilo: PARPADEANTE','', 'blink');
+SELECT systools.pg_logify('Estilo: dim',        '', 'dim');
+SELECT systools.pg_logify('Estilo: reverse',    '', 'reverse');
+SELECT systools.pg_logify('Estilo: hidden',     '', 'hidden');
 
 ---------------------------------------------------------
 -- 4) TRANSFORMACIONES UNICODE (Tipografía)
