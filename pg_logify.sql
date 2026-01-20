@@ -93,6 +93,10 @@ DECLARE
     v_prefix        TEXT := '';
     v_processed     TEXT;
     
+    v_shell_cmd TEXT;
+    v_log_line  TEXT;
+
+
     -- Auditoría Corporativa
     v_log_query TEXT := $sql$
         INSERT INTO logs.functions (fun_name, db_name, ip_client, user_name, start_time, status, msg, app_name)
@@ -161,12 +165,26 @@ BEGIN
         v_final_text := v_prefix || v_processed;
     END IF;
 
-    -- 5. Escritura física de log
+ 
+    ---------------------------------------------------------
+    -- 5. Escritura en archivo (Uso de COPY PROGRAM)
+    ---------------------------------------------------------
     IF p_log_path IS NOT NULL THEN
         BEGIN
-            PERFORM pg_catalog.pg_file_write(p_log_path, to_char(v_start_time, 'YYYY-MM-DD HH24:MI:SS') || '| ' || p_text || E'\n', true);
+            -- Preparar la línea de log (escapando comillas simples para el shell)
+            v_log_line := to_char(v_start_time, 'YYYY-MM-DD HH24:MI:SS') || '| '  || replace(p_text, '''', '''''');
+            
+            -- Construir comando: echo "mensaje" >> /ruta/al/archivo
+            -- Se usa format para manejar identificadores y literales de forma segura
+            v_shell_cmd := format($cmd$echo %L >> %I$cmd$, v_log_line, p_log_path);
+
+            -- Ejecutar vía COPY (técnica para ejecutar comandos de sistema)
+            -- Nota: Se redirige a una tabla temporal nula para que no retorne nada
+            EXECUTE format('COPY (SELECT 1) TO PROGRAM %L', v_shell_cmd);
+
         EXCEPTION WHEN OTHERS THEN
-            RAISE WARNING 'Fallo en escritura física en %. Revisar adminpack.', p_log_path;
+            GET STACKED DIAGNOSTICS ex_message = MESSAGE_TEXT;
+            RAISE WARNING 'Fallo al escribir en archivo via COPY PROGRAM: %', ex_message;
         END;
     END IF;
 
