@@ -128,7 +128,7 @@ CREATE OR REPLACE FUNCTION systools.pg_logify(
     p_text              TEXT,
     p_color             TEXT    DEFAULT '',
     p_style             TEXT    DEFAULT '',
-    p_is_return         BOOLEAN DEFAULT TRUE,
+    p_is_return         BOOLEAN DEFAULT FALSE,
     p_log_path          TEXT    DEFAULT NULL,
     p_add_timestamp     BOOLEAN DEFAULT FALSE,
     p_case              TEXT    DEFAULT NULL,
@@ -214,11 +214,12 @@ BEGIN
         CASE lower(p_typography)
             WHEN 'bold'           THEN v_processed := TRANSLATE(v_processed, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', '𝗮𝗯𝗰𝗱𝗲𝗳𝗴𝗵𝗶ｼ𝗸𝗹𝗺𝗻𝗼𝗽𝗾𝗿𝘀𝘁𝘂𝘃𝘄𝗅𝘆𝘇𝗔𝗕𝗖𝗗𝗘𝗙𝗚𝗛𝗜𝗝𝗞𝑳𝗠𝗡𝗢𝗣𝗤𝗥𝗦𝗧𝗨𝗩𝗪𝗫𝗬𝗭');
             WHEN 'italic'         THEN v_processed := TRANSLATE(v_processed, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', '𝑎𝑏𝑐𝑑𝑒𝑓𝑔ℎ𝑖𝑗𝑘𝑙𝑚 n𝑜𝑝𝑞𝑟𝑠𝑡𝑢𝑣𝑤𝑥𝑦𝑧𝑨𝑩𝑪𝑫𝑬𝑭𝑮𝑯𝑰𝑱𝑲𝑳𝑴𝑵𝑶𝑷𝑸𝑹𝑺𝑻𝑼𝑽𝑾𝑿𝒀𝒁');
-            WHEN 'bold_italic'    THEN v_processed := TRANSLATE(v_processed, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', '𝒂𝒃𝒄𝒅𝒆𝒇𝒉𝒊𝒋𝒌𝒍𝒎𝒏𝒐𝒑𝒒𝒓𝒔𝒕𝒖𝒗𝒘𝒙𝒚𝒛𝑨𝑩𝑪𝑫𝑬𝑭𝑮𝑯𝑰𝑱𝑲𝑳𝑴𝑵𝑶𝑷𝑸𝑹𝑺𝑻𝑼𝑽𝑾𝑿𝒀𝒁');
+            WHEN 'bold_italic'    THEN v_processed := TRANSLATE(v_processed, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', '𝒂𝒃𝒄𝒅𝒆𝒇𝒈𝒉𝒊𝒋𝒌𝒍𝒎𝒏𝒐𝒑𝒒𝒓𝒔𝒕𝒖𝒗𝒘𝒙𝒚𝒛𝑨𝑩𝑪𝑫𝑬𝑭𝑮𝑯𝑰𝑱𝑲𝑳𝑴𝑵𝑶𝑷𝑸𝑹𝑺𝑻𝑼𝑽𝑾𝑿𝒀𝒁');
+                                                                             
            -- WHEN 'underlined'     THEN v_processed := TRANSLATE(v_processed, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 'a̲b̲c̲d̲e̲f̲g̲h̲i̲j̲k̲l̲m̲n̲o̲p̲q̲r̲s̲t̲u̲v̲w̲x̲y̲z̲A̲B̲C̲D̲E̲F̲G̲H̲I̲J̲K̲L_M_N_O_P_Q_R_S_T_U_V_W_X_Y_Z_');
            -- WHEN 'strikethrough'  THEN v_processed := TRANSLATE(v_processed, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 'a̶b̶c̶d̶e̶f̶g̶h̶i̶j̶k̶l̶m̶n̶o̶p̶q̶r̶s̲t̲u̲v̲w̲x̲y̲z̲A̲B̲C̲D̲E̲F̲G̲H_I_J_K_L_M_N_O_P_Q_R_S_T_U_V_W_X_Y_Z_');
             WHEN 'superscript'    THEN v_processed := TRANSLATE(v_processed, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 'ᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖᵠʳˢᵗᵘᵛʷˣʸᶻᴬᴮᶜᴰᴱᶠᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾᵠᴿˢᵀᵁⱽᵂˣʸᶻ⁰¹²³⁴⁵⁶⁷⁸⁹');
-           -- WHEN 'subscript'      THEN v_processed := TRANSLATE(v_processed, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 'ₐₑᵢₒᵤᵢₑᵢₒᵤₖₗₘₙₒₚₓᵩᵣₛₜᵤᵥₓₜₜₘₙₓₓₓ₀₁₂₃₄₅₆₇₈₉');
+           -- WHEN 'subscript'      THEN v_processed := TRANSLATE(v_processed, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 'ₐₑᵢₒᵤᵢₑᵢₒᵤₖₗₘₙₒₚₓᵩᵣₛₜᵤ₥ₙₓₓₓ₀₁₂₃₄₅₆₇₈₉');
             WHEN 'bubble'         THEN v_processed := TRANSLATE(v_processed, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 'ⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩⒶⒷⒸⒹⒺⒻⒼⒽⒾⓀⓁⓂⓃⓄⓅⓆⓇⓈⓉⓊⓋⓌⓍⓎⓏ⓪①②③④⑤⑥⑦⑧⑨');
             WHEN 'inverted'       THEN v_processed := TRANSLATE(v_processed, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 'ɐqɔpǝɟƃɥᴉɾʞןɯuodbɹsʇnʌʍxʎz∀ԐↃpƎℲ⅁HIſ⋊⅃WNOԀΌɹS⊥∩ΛMX⅄Z');
             ELSE RAISE EXCEPTION 'Tipografía no soportada: %', p_typography;
@@ -259,11 +260,15 @@ BEGIN
     END IF;
 
     -- 8. Retorno
-    IF p_is_return THEN
+    IF not p_is_return THEN
         RAISE NOTICE '%', v_final_text;
         RETURN NULL;
     ELSE
-        RETURN v_final_text;
+		IF   p_color != '' AND p_style != '' AND p_case is null  AND p_typography is null THEN
+		            RETURN p_text;
+		        ELSE
+		            RETURN v_final_text;
+		END IF;
     END IF;
 
 EXCEPTION WHEN OTHERS THEN
