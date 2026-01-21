@@ -1,43 +1,56 @@
 
 # pg_logify 📝✨
 
-**pg_logify** es un framework de logging con una funcion avanzada para PostgreSQL que transforma los mensajes `NOTICE` estándar en registros enriquecidos, visualmente atractivos y persistentes.
+**pg_logify** es una potente framework con una funcion, diseñada para desarrolladores y DBAs que buscan transformar el logging tradicional en una experiencia de auditoría dinámica, visual y forense directamente desde el motor de base de datos.
 
-Con **pg_logify**, puedes dar formato a tus mensajes con colores ANSI, estilos tipográficos Unicode (negritas, burbujas, cursivas) y dirigirlos automáticamente a la consola o simplemente retornarlo para guardarlo en alguna variable y reutlizarlo despues , 
-también guardar el texto en un archivos del sistema operativo o a tablas de auditoría bien estructurada y estandarizada.
-
+combina la potencia del formato **ANSI** para consolas psql, transformaciones **Unicode** para legibilidad avanzada y una arquitectura de persistencia dual (Archivo + Base de Datos).
 
 
 Un framework define una forma estándar de hacer las cosas. En lugar de que cada desarrollador use su propio RAISE NOTICE, todos usan pg_logify. Esto garantiza que todos los logs de tu servidor tengan el mismo formato, la misma zona horaria y el mismo estilo
 
 
----
+## ✨ Características Principales
 
-## 🚀 Características Principales
+* 🎨 **Rich Terminal Output:** Soporte completo para colores y estilos ANSI (Negrita, Subrayado, Parpadeo, etc.) optimizados para `psql`.
+* 🔠 **Unicode Typography:** Motor de transformación de fuentes integrado (Bold, Italic, Bubble, Inverted, Superscript, Subscript) para resaltar mensajes críticos.
+* 📂 **Dual Persistence:** Escritura simultánea en archivos de sistema (vía Shell/COPY PROGRAM) y auditoría relacional.
+* 🛡️ **Enterprise Security:** Ejecución segura mediante `SECURITY DEFINER` y sanitización estricta contra inyección SQL en metadatos dinámicos.
+* 📊 **Dynamic Auditing:** Integración con la tabla `logs.system_events` permitiendo sobreescribir cualquier columna (log_level, request_id, app_user) mediante objetos JSONB sin alterar la firma de la función.
 
-* **🎨 Estilo Visual:** Soporte completo para colores ANSI (Rojo, Verde, Azul, etc.) y estilos (Negrita, Parpadeo, Subrayado).
-* **🔡 Tipografías Unicode:** Motor de transformación de texto integrado para usar tipografías como 𝗯𝗼𝗹𝗱, ⓑⓤⓑⓑⓛⓔ, ⁱᵗᵃˡⁱᶜ y más.
-* **💾 Persistencia Multi-destino:**
-    * **Consola:** Salida formateada directamente en `psql`.
-    * **Archivo:** Escritura en archivos de logs a nivel de Servidor (S.O.).
-    * **Tabla:** (En desarrollo) Registro automático en el esquema `logs` para auditoría SQL.
-* **🧠 Inteligencia de Cliente:** Detecta automáticamente si el cliente es `psql` para aplicar formatos o texto plano.
 
----
+## 🎨 Tipografías Soportadas
 
-## 🛠️ Instalación
-
-1. Ejecuta el script en tu base de datos:
-```bash
-psql -d tu_db -f pg_logify.sql
-
-```
+| Comando | Resultado |
+| --- | --- |
+| `bold` | **𝗮𝗯𝗰𝗱** |
+| `bubble` | ⓐⓑⓒⓓ |
+| `italic` | *𝑎𝑏𝑐𝑑* |
+| `subscript` | ₐᵦcd |
+| `inverted` | ɐqɔp |
 
 
 
----
+## 🛠️ Instalación Rápida
 
-## 📖 Guía de Uso
+1. **Preparar el entorno:**
+Asegúrate de tener los esquemas `systools` y `logs` creados.
+2. **Crear la infraestructura de auditoría:**
+Ejecuta el DDL de la tabla `logs.system_events`.
+3. **creacián de la función:**
+Crea la funcion con un usuario que tenga permisos de usar COPY PROGRAM en la función `systools.pg_logify`.
+ 
+
+## 🔒 Seguridad y Sanitización
+
+La herramienta incluye una capa de protección que valida y sanitiza cada entrada del usuario en el parámetro `p_extra_data`:
+
+* **White-listing:** Solo permite niveles de log válidos (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`).
+* **Safe Casting:** Valida tipos `UUID` e `INTEGER` evitando excepciones de tipo de dato.
+* **Anti-Injection:** Todas las inserciones utilizan *Bind Parameters* nativos de PostgreSQL.
+
+
+
+## 📖 Guía de Uso y Ejemplos
 
  
 ```sql
@@ -181,17 +194,6 @@ SELECT systools.pg_logify(
 ```
 
 ---
-
-## 🎨 Tipografías Soportadas
-
-| Comando | Resultado |
-| --- | --- |
-| `bold` | **𝗮𝗯𝗰𝗱** |
-| `bubble` | ⓐⓑⓒⓓ |
-| `italic` | *𝑎𝑏𝑐𝑑* |
-| `subscript` | ₐᵦcd |
-| `inverted` | ɐqɔp |
-
 
 
 ### **¿Qué puedes hacer con pg_logify? (Casos de uso)**
