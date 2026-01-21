@@ -96,14 +96,14 @@ WHERE
    - @p_text (text): Mensaje principal a procesar y registrar.
    - @p_color (text): Color ANSI para consola psql (red, green, blue, etc.).
    - @p_style (text): Estilo ANSI para consola psql (bold, dim, italic, underline, etc.).
-   - @p_is_return (boolean): TRUE para emitir RAISE NOTICE; FALSE para retornar el texto formateado.
+   - @p_return_text (boolean): TRUE para emitir RAISE NOTICE; FALSE para retornar el texto formateado.
    - @p_log_path (text): Ruta absoluta en el servidor para persistencia física (via COPY PROGRAM).
    - @p_add_timestamp (boolean): Indica si se añade prefijo [YYYY-MM-DD HH24:MI:SS] al texto.
    - @p_case (text): Transformación de caja ('upper' o 'lower').
    - @p_typography (text): Estilo de fuente Unicode (bold, italic, bubble, inverted, etc.).
    - @p_save_table (boolean): Controla si el evento se registra en la tabla logs.system_events.
    - @p_extra_data (jsonb): Objeto para sobreescribir solo las columnas (log_level, category, aud_detail, line_number, aud_sql_state, app_name, app_user, request_id).
- @Returns: text - NULL si p_is_return es TRUE, o el texto formateado si es FALSE.
+ @Returns: text - NULL si p_return_text es TRUE, o el texto formateado si es FALSE.
  @Author: CR0NYM3X
  ---------------- HISTORY ----------------
  @Date: 20/01/2026
@@ -128,7 +128,7 @@ CREATE OR REPLACE FUNCTION systools.pg_logify(
     p_text              TEXT,
     p_color             TEXT    DEFAULT '',
     p_style             TEXT    DEFAULT '',
-    p_is_return         BOOLEAN DEFAULT FALSE,
+    p_return_text         BOOLEAN DEFAULT FALSE,
     p_log_path          TEXT    DEFAULT NULL,
     p_add_timestamp     BOOLEAN DEFAULT FALSE,
     p_case              TEXT    DEFAULT NULL,
@@ -260,7 +260,7 @@ BEGIN
     END IF;
 
     -- 8. Retorno
-    IF not p_is_return THEN
+    IF not p_return_text THEN
         RAISE NOTICE '%', v_final_text;
         RETURN NULL;
     ELSE
