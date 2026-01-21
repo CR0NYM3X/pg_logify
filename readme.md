@@ -205,3 +205,15 @@ SELECT systools.pg_logify(
 * **Caja Negra de Funciones:** Grabar automáticamente el inicio y fin de funciones críticas en archivos externos del servidor para depuración posterior.
 * **UX para DBAs:** Crear menús e interfaces interactivas en `psql` más elegantes y legibles mediante estilos de texto (subrayados, invertidos, parpadeos).
 * **Alertas Visuales:** Hacer que los errores críticos "parpadeen" en la consola para que el administrador los detecte inmediatamente.
+
+---
+
+
+
+![asd](https://github.com/CR0NYM3X/pg_logify/blob/main/img/COMBINACIONES.png)
+![asd](https://github.com/CR0NYM3X/pg_logify/blob/main/img/PRUEBA%20DE%20COLORES.png)
+![asd](https://github.com/CR0NYM3X/pg_logify/blob/main/img/PRUEBA%20DE%20ESTILOS.png)
+![asd](https://github.com/CR0NYM3X/pg_logify/blob/main/img/TRANSFORMACIONES%20UNICODE.png)
+![asd](https://github.com/CR0NYM3X/pg_logify/blob/main/img/Guardar%20en%20un%20archivo%20y%20tabla.png)
+![asd](https://github.com/CR0NYM3X/pg_logify/blob/main/img/resultados%20de%20tabla.png)
+
