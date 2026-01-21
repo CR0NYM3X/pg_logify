@@ -55,10 +55,25 @@ La herramienta incluye una capa de protección que valida y sanitiza cada entrad
  
 ```sql
 
+--- Parametros de la función
+CREATE OR REPLACE FUNCTION systools.pg_logify(
+    p_text              TEXT,
+    p_color             TEXT    DEFAULT '',
+    p_style             TEXT    DEFAULT '',
+    p_return_text         BOOLEAN DEFAULT FALSE,
+    p_log_path          TEXT    DEFAULT NULL,
+    p_add_timestamp     BOOLEAN DEFAULT FALSE,
+    p_case              TEXT    DEFAULT NULL,
+    p_typography        TEXT    DEFAULT NULL,
+    p_save_table        BOOLEAN DEFAULT TRUE,
+    p_extra_data        JSONB   DEFAULT '{}'::jsonb
+)
+
+
 ---------------------------------------------------------
 -- 1) RETORNO DE TEXTO (Para asignar a variables)
 ---------------------------------------------------------
--- Nota: p_is_return = FALSE devuelve el valor TEXT sin imprimir NOTICE
+-- Nota: p_return_text = FALSE devuelve el valor TEXT sin imprimir NOTICE
 SELECT 'Resultado capturado: ' || systools.pg_logify('Texto para variable', 'cyan', 'bold', FALSE) AS test_variable;
 
 ---------------------------------------------------------
