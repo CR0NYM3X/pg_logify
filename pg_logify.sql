@@ -102,7 +102,7 @@ WHERE
    - @p_case (text): Transformación de caja ('upper' o 'lower').
    - @p_typography (text): Estilo de fuente Unicode (bold, italic, bubble, inverted, etc.).
    - @p_save_table (boolean): Controla si el evento se registra en la tabla logs.system_events.
-   - @p_extra_data (jsonb): Objeto para sobreescribir columnas de auditoría (log_level, category, request_id, etc.).
+   - @p_extra_data (jsonb): Objeto para sobreescribir solo las columnas (log_level, category, aud_detail, line_number, aud_sql_state, app_name, app_user, request_id).
  @Returns: text - NULL si p_is_return es TRUE, o el texto formateado si es FALSE.
  @Author: CR0NYM3X
  ---------------- HISTORY ----------------
