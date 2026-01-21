@@ -132,6 +132,52 @@ LIMIT 10;
 
 
 
+
+
+-- 1. Prueba de Overrides completos (Campos válidos)
+SELECT systools.pg_logify(
+    p_text       := 'Evento de Seguridad Detectado',
+    p_color      := 'red',
+    p_typography := 'italic',
+    p_extra_data := '{
+        "log_level": "CRITICAL",
+        "category": "SECURITY",
+        "detail": "Intento de fuerza bruta en login",
+        "app_user": "firewall_admin",
+        "request_id": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+        "app_name"  : "contabilidad.exe",
+        "line_number": 1024,
+        "sql_state": "XX000"
+    }'::jsonb
+);
+
+
+
+-- 2. Prueba de Sanitización (Evitando inyección y tipos erróneos)
+-- Aquí enviamos basura en request_id y line_number, y un log_level inexistente.
+-- El sistema debe usar defaults seguros.
+SELECT systools.pg_logify(
+    p_text       := 'Prueba Sanitizacion',
+    p_extra_data := '{
+        "log_level": "NIVEL_HACKER", 
+        "line_number": "no_soy_un_numero",
+        "request_id": "no_soy_un_uuid",
+        "sql_state": "CODIGO_MUY_LARGO_PARA_SQL_STATE"
+    }'::jsonb
+);
+
+--- 3 
+SELECT systools.pg_logify(
+    'Procesamiento de nómina completado',
+    'green',
+    p_extra_data := jsonb_build_object(
+        'log_level', 'INFO',
+        'category',  'FINANCE',
+        'app_user',  'admin_contable',
+        'request_id', gen_random_uuid() -- Generas el ID de rastreo al vuelo
+    )
+);
+
 ```
 
 ---
@@ -145,8 +191,6 @@ LIMIT 10;
 | `italic` | *𝑎𝑏𝑐𝑑* |
 | `subscript` | ₐᵦcd |
 | `inverted` | ɐqɔp |
-
----
 
 
 
